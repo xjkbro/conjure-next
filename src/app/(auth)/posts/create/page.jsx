@@ -9,13 +9,15 @@ import React, { useState } from "react";
 export default function CreatePost() {
 	const [formData, setFormData] = useState({
 		title: "",
+		slug: "",
+		description: "",
 		content: "",
 	});
 	const router = useRouter();
 	const mutation = useMutation({
 		mutationFn: async () => {
 			await getToken();
-			const response = await fetch("/api/posts", {
+			const response = await fetch("/api/v1/admin/posts", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
@@ -27,43 +29,89 @@ export default function CreatePost() {
 			const data = await response.json();
 			return data;
 		},
-		onSuccess: () => {
+		onSuccess: (data) => {
 			// Invalidate and refetch
+			router.push("/posts/" + data.id);
 		},
 	});
 	return (
-		<div className="flex mt-12 justify-center items-center">
-			<form className="flex flex-col gap-2 max-w-xs">
-				<input
-					className="input input-bordered w-full max-w-xs"
-					type="text"
-					placeholder="Title"
-					value={formData.title}
-					onChange={(e) =>
-						setFormData({ ...formData, title: e.target.value })
-					}
-				/>
-				<textarea
-					placeholder="Content"
-					value={formData.content}
-					className="textarea textarea-bordered w-full max-w-xs"
-					onChange={(e) =>
-						setFormData({ ...formData, content: e.target.value })
-					}
-				/>
-
-				<button
-					className="btn"
+		<div className="mt-8 w-11/12 mx-auto">
+			<div className="flex justify-end gap-2">
+				<div
+					className="btn btn-primary"
 					onClick={(e) => {
 						e.preventDefault();
 						mutation.mutate(formData);
 						queryClient.invalidateQueries({ queryKey: ["posts"] });
-						router.push("/posts");
+						console.log(mutation);
 					}}
 				>
-					Submit
-				</button>
-			</form>
+					Save
+				</div>
+			</div>
+			<div className="flex justify-center mt-8">
+				<div className="w-11/12 grid grid-cols-4 gap-3">
+					<label className="form-control w-full col-span-2">
+						<div className="label label-text">Title</div>
+						<input
+							type="text"
+							placeholder="Type here"
+							className="input input-bordered w-full"
+							value={formData.title}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									title: e.target.value,
+								})
+							}
+						/>
+					</label>
+					<label className="form-control w-full col-span-2">
+						<div className="label label-text">Slug</div>
+						<input
+							type="text"
+							placeholder="Type here"
+							className="input input-bordered w-full"
+							value={formData.slug}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									slug: e.target.value,
+								})
+							}
+						/>
+					</label>
+					<label className="form-control w-full col-span-4">
+						<div className="label label-text">Description</div>
+						<input
+							type="text"
+							placeholder="Type here"
+							className="input input-bordered w-full"
+							value={formData.description}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									description: e.target.value,
+								})
+							}
+						/>
+					</label>
+					<label className="form-control col-span-4">
+						<div className="label label-text">Content</div>
+						<textarea
+							className="textarea textarea-bordered h-96 resize-none"
+							placeholder="Bio"
+							value={formData.content}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									content: e.target.value,
+								})
+							}
+						></textarea>
+					</label>
+				</div>
+			</div>
 		</div>
 	);
 }

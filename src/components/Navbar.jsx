@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
 import { getToken } from "@/auth/auth";
 import Link from "next/link";
+import ThemeSelector from "./ThemeSelector";
 
 export default function Navbar() {
 	const router = useRouter();
@@ -23,11 +24,11 @@ export default function Navbar() {
 	};
 	return (
 		<div className="navbar bg-base-100 flex justify-between shadow-md">
-			<a className="btn btn-ghost text-xl">daisyUI</a>
+			<Link href={"/dashboard"} className="btn btn-ghost text-xl">
+				conjureCMS
+			</Link>
 			<ul className="flex gap-4">
-				<Link href="/dashboard">Dashboard</Link>
-				<Link href="/posts">Posts</Link>
-
+				<ThemeSelector />
 				<button className="btn" onClick={handleLogout}>
 					Logout
 				</button>
